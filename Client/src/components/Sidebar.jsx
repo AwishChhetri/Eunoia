@@ -21,10 +21,10 @@ export const Sidebar = () => {
             <Link to="/personality-test">Personality Test</Link>
           </Button>
           <Button colorScheme="teal" variant="solid" size="md">
-            Mental Assessment
+           <Link to="/"> Mental Assessment</Link>
           </Button>
           <Button colorScheme="teal" variant="solid" size="md">
-            Book Session
+           <Link to="/appointment"> Book Session</Link>
           </Button>
           <Button colorScheme="white" variant="outline" mt={59} size="md">
             Log out

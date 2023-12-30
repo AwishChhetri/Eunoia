@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 
 import {Sidebar} from "../components/Sidebar.jsx"
+import { LandingPage } from '../components/LandingPage.jsx';
 export const Dash = () => {
   return (
     <Flex minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
@@ -20,8 +21,8 @@ export const Dash = () => {
       <Flex flex="1" direction="column" p="8" ml="300px">
         {/* Main Content */}
         <Box p="6" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
-          {/* Questions*/}
-         
+          {/* Feature */}
+          <LandingPage/>
         </Box>
 
         {/* Footer component */}

@@ -1,41 +1,37 @@
-// QuestionForm.js
+// QuestionsForm.js
 import React from 'react';
 import { FormControl, FormLabel, FormHelperText, RadioGroup, Radio, VStack, HStack, Button, Text } from '@chakra-ui/react';
 
-export const QuestionsForm = ({ currentQuestion, questions, selectedOptions, onOptionChange, onNextQuestion, onSubmit, timer }) => (
-  <VStack w="80%">
-    <FormControl as="fieldset">
-      <FormLabel fontSize="lg" color="black">
+export const QuestionsForm = ({ currentQuestion, questions, options, selectedOptions, onOptionChange, onNextQuestion, onSubmit, timer }) => (
+  <VStack w="80%" align="start" spacing="8">
+    <FormControl as="fieldset" w="100%">
+      <FormLabel fontSize="lg" color="teal.500" textAlign="start">
         {currentQuestion + 1}. {questions[currentQuestion]}
       </FormLabel>
-      <RadioGroup defaultValue="3" name={`question-${currentQuestion}`}>
-        <VStack align="start" spacing="2" color="gray.800">
-          {[1, 2, 3, 4, 5].map((value) => (
+      <RadioGroup value={selectedOptions[currentQuestion] || ''}>
+        <VStack spacing="4" color="gray.800" align="flex-start">
+          {Object.entries(options).map(([optionKey, optionValue]) => (
             <Radio
-              key={value}
-              value={String(value)}
+              key={optionValue}
+              isChecked={selectedOptions[currentQuestion] === optionValue}
+              value={optionValue}
               colorScheme="teal"
               size="lg"
-              isChecked={selectedOptions[currentQuestion] === String(value)}
-              onChange={() => onOptionChange(String(value))}
+              onChange={() => onOptionChange(optionValue)}
+              style={{
+                backgroundColor: selectedOptions[currentQuestion] === optionValue ? 'black' : 'white',
+                color: selectedOptions[currentQuestion] === optionValue ? 'white' : 'black',
+              }}
             >
-              {value === 1
-                ? 'Strongly Agree'
-                : value === 2
-                ? 'Agree'
-                : value === 3
-                ? 'Neutral'
-                : value === 4
-                ? 'Disagree'
-                : 'Strongly Disagree'}
+              {optionKey}
             </Radio>
           ))}
         </VStack>
       </RadioGroup>
-      <FormHelperText color="gray.400">Choose the option that best describes your opinion.</FormHelperText>
+      <FormHelperText color="gray.400" textAlign="start">Choose the option that best describes your opinion.</FormHelperText>
     </FormControl>
 
-    <HStack mt="4">
+    <HStack mt="8" spacing="4" justify="start" align="start">
       {currentQuestion === questions.length - 1 ? (
         <Button colorScheme="teal" onClick={onSubmit}>
           Submit
