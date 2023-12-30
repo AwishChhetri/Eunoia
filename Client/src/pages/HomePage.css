@@ -1,5 +1,5 @@
 .Home {
-    background-image:  url('../../src/assets/OpenUp.jpg');
+    background-image: linear-gradient(to right, #89f7fe, #66a6ff), url('../../src/assets/OpenUp.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh; /* Adjust the height as needed */
