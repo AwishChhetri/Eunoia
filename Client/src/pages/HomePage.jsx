@@ -3,9 +3,10 @@ import {Container, Box, Text} from "@chakra-ui/react"
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import Login from "../components/Login.jsx"
 import SignUp from "../components/SignUp.jsx"
+import '../pages/HomePage.css'
 export const HomePage = () => {
   return (
-    
+    <div className="Home">
       <Container maxW="xl" centerContent>
           <Box 
           display={"flex"}
@@ -38,7 +39,7 @@ export const HomePage = () => {
           </Tabs>
           </Box>
       </Container>
-  
+      </div>
   )
 }
 
