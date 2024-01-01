@@ -20,24 +20,10 @@ export const Questions = () => {
     "I try to be courteous to everyone I meet.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "I keep my belongings neat and clean.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "At times I have felt bitter and resentful.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I laugh easily.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I think it's interesting to learn and develop new hobbies.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
-    "At times I bully or flatter people into doing what I want them to.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
-    "I'm pretty good about pacing myself so as to get things done on time.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "When I'm under a great deal of stress, sometimes I feel like I'm going to pieces.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I prefer jobs that let me work alone without being bothered by other people.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
-    "I am intrigued by the patterns I find in art and nature.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "Some people think I'm selfish and egotistical.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
-    "I often come into situations without being fully prepared.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
+    "I try to perform all the tasks assigned to me conscientiously.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "I rarely feel lonely or blue.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
     "I really enjoy talking to people.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I believe letting students hear controversial speakers can only confuse and mislead them.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
     "If someone starts a fight, I'm ready to fight back.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I try to perform all the tasks assigned to me conscientiously.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I often feel tense and jittery.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "I like to be where the action is.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-    "Poetry has little or no effect on me.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
-    "I'm better than most people, and I know it.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
     "I have a clear set of goals and work toward them in an orderly fashion.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "Sometimes I feel completely worthless.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "I shy away from crowds of people.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
@@ -64,7 +50,7 @@ export const Questions = () => {
     "I have little interest in speculating on the nature of the universe or the human condition.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
     "I generally try to be thoughtful and considerate.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
     "I am a productive person who always gets the job done.": { 'Strongly Disagree': 0, Disagree: 1, Neutral: 2, Agree: 3, 'Strongly Agree': 4 },
-  };
+  }; 
   
   
 
