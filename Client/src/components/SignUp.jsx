@@ -14,7 +14,44 @@ const SignUp=()=>{
     const handleClick=(e) => setShow(!show); 
 
     const postDetails=(pics)=>{};
-    const submitHandler=()=>{};
+    const submitHandler = () => {
+        // Perform validation here before submitting the data
+        if (!name || !email || !password || !confirmpassword) {
+          // Handle case where any of the required fields are empty
+          console.log('Please fill in all the required fields.');
+          return;
+        }
+      
+        if (password !== confirmpassword) {
+          // Handle case where password and confirm password do not match
+          console.log('Password and Confirm Password must match.');
+          return;
+        }
+      
+        // All validations passed, you can now submit the data
+        const userDetails = {
+          name: name,
+          email: email,
+          password: password,
+          // Add other details as needed
+        };
+      
+        console.log('User Details:', userDetails);
+      
+        // You can make an API call to submit the data to your server here
+        // For example, you can use fetch or axios to send the data to your backend
+      
+        // Reset the form after submission if needed
+        setName('');
+        setEmail('');
+        setPassword('');
+        setConfirmpassword('');
+        setPic(null); // Assuming setPic is used to store the uploaded picture
+      
+        // Optionally, you can redirect the user to another page or show a success message
+        console.log('Registration successful!');
+      };
+      
 
     return (
         
