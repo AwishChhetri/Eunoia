@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormControl,
   FormLabel,
@@ -18,10 +18,31 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleClick = () => setShow(!show);
-  const history=useHistory()
+  const history = useHistory();
+  const [sessionTimeout, setSessionTimeout] = useState(null);
+
+  useEffect(() => {
+    // Clear session timeout on component unmount
+    return () => {
+      if (sessionTimeout) {
+        clearTimeout(sessionTimeout);
+      }
+    };
+  }, [sessionTimeout]);
+
+  const setSessionTimeoutCallback = () => {
+    const sessionTimeoutId = setTimeout(() => {
+      // Clear localStorage and redirect to login page
+      localStorage.removeItem('token');
+      history.push('/');
+    }, 30 * 60 * 1000); // Set timeout for 30 minutes (adjust as needed)
+
+    setSessionTimeout(sessionTimeoutId);
+  };
+
   const submitHandler = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/login', {
+      const response = await axios.post('https://eunoiaserver.onrender.com/api/login', {
         email,
         password,
       });
@@ -29,8 +50,11 @@ const Login = () => {
       // Assuming your server returns a token in the response
       const { token } = response.data;
 
-      // Store the token in localStorage or sessionStorage
+      // Store the token in localStorage
       localStorage.setItem('token', token);
+
+      // Set session timeout
+      setSessionTimeoutCallback();
 
       // Redirect to the dashboard or perform other actions
       console.log('Login successful!');
@@ -39,6 +63,7 @@ const Login = () => {
       console.error('Error during login:', error.message);
     }
   };
+
   return (
     <VStack spacing="5px" color="black">
       <FormControl id="email" isRequired>
@@ -65,16 +90,15 @@ const Login = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-    
-        <Button
-          colorScheme="blue"
-          width="100%"
-          style={{ marginTop: 15 }}
-          onClick={submitHandler}
-        >
-          Login
-        </Button>
-      
+
+      <Button
+        colorScheme="blue"
+        width="100%"
+        style={{ marginTop: 15 }}
+        onClick={submitHandler}
+      >
+        Login
+      </Button>
     </VStack>
   );
 };

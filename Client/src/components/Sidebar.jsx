@@ -61,7 +61,7 @@ export const Sidebar = () => {
               </Link>
             </Button>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaBrain} />}>
-              <Link to="/" onClick={handleCloseSidebar}>
+              <Link to="/personality-test" onClick={handleCloseSidebar}>
                 Mental Assessment
               </Link>
             </Button>
@@ -79,7 +79,9 @@ export const Sidebar = () => {
               leftIcon={<Icon as={FaSignOutAlt} />}
               onClick={handleCloseSidebar}
             >
-              Log out
+             <Link to="/" onClick={handleCloseSidebar}>
+                Log Out
+              </Link>
             </Button>
           </VStack>
         </Flex>
