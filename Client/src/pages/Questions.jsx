@@ -166,29 +166,29 @@ export const Questions = () => {
   };
 
   return (
-    <Flex minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
-      <Sidebar />
-      <Flex flex="1" direction="column" p="8" ml="300px">
+    <Flex direction={{ base: 'column', md: 'row' }} minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
+    <Sidebar display={{ base: 'none', md: 'solid' }} />
+    <Flex flex="1" direction="column" p="8" ml={{ base: '0', md: '260px' /* Adjust the value as needed */ }}>
         {/* Main Content */}
         <Box p="6" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
           <Container maxW="xl" centerContent>
             <Box
-              display={'flex'}
+              display={{ base: 'block', md: 'flex' }}
               justifyContent="center"
               p={3}
               bg={'white'}
               w="100%"
-              m="40px 0 15px 0"
+              m={{ base: '40px 0 15px 0', md: '20px 0 15px 0' }}
               borderRadius="lg"
               borderWidth="1px"
             >
-              <Text fontSize="4xl" fontFamily="Work Sans" color="black">
+              <Text fontSize={{ base: '4xl', md: '2xl' }} fontFamily="Work Sans" color="black">
                 Personality Test
               </Text>
             </Box>
           </Container>
           <VStack align="center" spacing="4" mt="4">
-            <Image src={logo} alt="Personality Test Logo" boxSize="200px" />
+            <Image src={logo} alt="Personality Test Logo" boxSize={{ base: '200px', md: '150px' }} />
 
             {!testStarted && <TestRules agreementChecked={agreementChecked} onAgreementChange={setAgreementChecked} />}
 
@@ -220,7 +220,7 @@ export const Questions = () => {
         {/* Footer component */}
         <Box mt="auto" textAlign="center">
           <Text fontSize="sm" color="gray.500">
-            &copy; 2023 Naruto Dashboard. All rights reserved.
+            &copy; 2024 Eunoia. All rights reserved.
           </Text>
         </Box>
       </Flex>

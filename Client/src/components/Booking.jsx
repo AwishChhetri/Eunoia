@@ -34,6 +34,25 @@ export const Booking = () => {
       <Text fontSize="xl" mb={4}>
         Appointment Booking
       </Text>
+      <FormControl id="patientName">
+              <FormLabel>Name</FormLabel>
+              <Input type="text" placeholder="John Doe" />
+            </FormControl>
+            <FormControl id="age">
+              <FormLabel>Age</FormLabel>
+              <Input type="number" placeholder="30" />
+            </FormControl>
+            <FormControl id="maritalStatus">
+              <FormLabel>Marital Status</FormLabel>
+              <Input type="text" placeholder="Single/Married" />
+            </FormControl>
+            <FormControl id="gender">
+              <FormLabel>Gender</FormLabel>
+              <Select placeholder="Select Gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </Select>
+            </FormControl>
       <FormControl id="date" mb={4}>
         <FormLabel>Date</FormLabel>
         <Input
@@ -71,13 +90,3 @@ export const Booking = () => {
     </Box>
   );
 };
-
-const YourComponent = () => {
-  return (
-    <Flex justify="center" align="center" h="100vh" color="black">
-      <AppointmentBooking />
-    </Flex>
-  );
-};
-
-export default YourComponent;

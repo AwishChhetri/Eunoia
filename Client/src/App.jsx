@@ -4,14 +4,25 @@ import { Dash } from "./pages/Dash.jsx";
 import { Questions } from "./pages/Questions.jsx";
 import { IntakeForm } from "./pages/IntakeForm.jsx";
 import { Appointment } from "./pages/Appointment.jsx";
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  const token = localStorage.getItem('token');
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        token ? <Component {...props} /> : <Redirect to="/login" />
+      }
+    />
+  );
+};
 const App=()=>{
   return (
       <div className="App">
       <Route path='/' component={HomePage} exact />
-      <Route path='/dash' component={Dash} />
-      <Route path='/personality-test' component={Questions} />
-      <Route path='/intake-form' component={IntakeForm} />
-      <Route path='/appointment' component={Appointment} />
+      <PrivateRoute path="/dash" component={Dash} />
+      <PrivateRoute path='/personality-test' component={Questions} />
+      <PrivateRoute path='/intake-form' component={IntakeForm} />
+      <PrivateRoute path='/appointment' component={Appointment} />
       </div>
   )
   }
