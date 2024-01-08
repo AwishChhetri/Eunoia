@@ -51,22 +51,22 @@ export const Sidebar = () => {
               <Text mt={2}>John Doe</Text>
             </Box>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaFileAlt} />}>
-              <Link to="/intake-form" onClick={handleCloseSidebar}>
+              <Link to="/intake-form">
                 Intake Form
               </Link>
             </Button>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaUser} />}>
-              <Link to="/personality-test" onClick={handleCloseSidebar}>
+              <Link to="/personality-test" >
                 Personality Test
               </Link>
             </Button>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaBrain} />}>
-              <Link to="/personality-test" onClick={handleCloseSidebar}>
+              <Link to="/personality-test" >
                 Mental Assessment
               </Link>
             </Button>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaCalendarAlt} />}>
-              <Link to="/appointment" onClick={handleCloseSidebar}>
+              <Link to="/appointment" >
                 Book Session
               </Link>
             </Button>
@@ -79,7 +79,7 @@ export const Sidebar = () => {
               leftIcon={<Icon as={FaSignOutAlt} />}
               onClick={handleCloseSidebar}
             >
-             <Link to="/" onClick={handleCloseSidebar}>
+             <Link to="/" >
                 Log Out
               </Link>
             </Button>
