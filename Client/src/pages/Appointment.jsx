@@ -13,7 +13,7 @@ import { Booking } from '../components/Booking.jsx';
 
 export const Appointment = () => {
   return (
-    <Flex minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
+    <Flex minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white" direction="column">
       {/* Sidebar */}
       <Sidebar />
 
@@ -21,8 +21,7 @@ export const Appointment = () => {
       <Flex
         flex="1"
         direction="column"
-        p="4" // Adjust padding for mobile view
-        ml={{ base: '0', md: '300px' }} // Adjust margin for mobile view
+        p={{ base: '2', md: '4' }} // Adjust padding for mobile view
       >
         {/* Main Content */}
         <Box p="4" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
@@ -31,7 +30,7 @@ export const Appointment = () => {
         </Box>
 
         {/* Footer component */}
-        <Box mt="auto" textAlign="center">
+        <Box textAlign="center" p="2">
           <Text fontSize="sm" color="gray.500">
             &copy; 2023 Naruto Dashboard. All rights reserved.
           </Text>
