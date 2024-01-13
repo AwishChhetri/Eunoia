@@ -24,7 +24,14 @@ export const Appointment = () => {
         p={{ base: '2', md: '4' }} // Adjust padding for mobile view
       >
         {/* Main Content */}
-        <Box p="4" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
+        <Box
+          p={{ base: '2', md: '4' }} // Adjust padding for mobile view
+          bg="white"
+          borderRadius="md"
+          boxShadow="md"
+          mb={{ base: '4', md: '8' }} // Adjust margin for mobile view
+          id="PersonalityTest"
+        >
           {/* Feature */}
           <Booking />
         </Box>

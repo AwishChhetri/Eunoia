@@ -1,307 +1,199 @@
-import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import image from "../assets/hello.jpg"
 import {
-  VStack,
   Box,
+  Image,
   Text,
   Button,
-  Select,
   FormControl,
+  Select,
   FormLabel,
   Input,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  useMediaQuery,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
-import { Payment } from "../Payment/payment.jsx";
-import { loadRazorpayScript } from "../Payment/razorpayScript";
-
-const IntakeForm = ({ onFormSubmit }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const handleSubmit = () => {
-    onFormSubmit();
-    onClose();
-  };
-
-  return (
-    <>
-      <Button colorScheme="teal" onClick={onOpen} mb={4}>
-        Fill Intake Form
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Intake Form</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl>
-              <FormLabel>Additional Form Field 1</FormLabel>
-              <Input type="text" />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Additional Form Field 2</FormLabel>
-              <Input type="text" />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="teal" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
-
-const BookingIntakeForm = ({ index, onSubmit }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const handleSubmit = () => {
-    onSubmit(index);
-    onClose();
-  };
-
-  return (
-    <>
-      <Button colorScheme="orange" onClick={onOpen} mt={2}>
-        Intake Form
-      </Button>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Intake Form</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <IntakeForm onFormSubmit={onSubmit} />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="teal" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
 
 export const Booking = () => {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-  const [bookingStatus, setBookingStatus] = useState(null);
-  const [bookings, setBookings] = useState([]);
-  const [isMobile] = useMediaQuery("(max-width: 600px)");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [patientName, setPatientName] = useState("");
+  const [appointmentDetails, setAppointmentDetails] = useState({
+    date: "",
+    name: "",
+    timing: "",
+    age: "", 
+  });
 
-  useEffect(() => {
-    loadRazorpayScript(() => {
-      console.log("Razorpay script loaded successfully");
+  const [book, setBook] = useState({
+    serviceName: "One to One Virtual Counselling",
+    companyName: "Eunoia", 
+    img: `${image}`,
+    price: 999,
+    appointmentDetails: { ...appointmentDetails },
+  });
+
+  const [formCompleted, setFormCompleted] = useState(false);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = resolve;
+      document.head.appendChild(script);
     });
-  }, []);
-
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
   };
 
-  const handleTimeChange = (e) => {
-    setSelectedTime(e.target.value);
-  };
+  const initPayment = async (paymentData) => {
+    await loadRazorpayScript();
 
-  const handleBooking = async () => {
-    setBookingStatus(null);
-
-    const isVerified = Math.random() < 0.8;
-
-    if (isVerified) {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1));
-        setBookingStatus("Not Booked");
-        const newBooking = {
-          name: patientName,
-          date: selectedDate,
-          time: selectedTime,
-          payment: "Paid",
-          status: "Booked",
-          orderId: generateOrderId(),
-        };
-        setBookings([...bookings, newBooking]);
-      } catch (error) {
-        setBookingStatus("Payment Failed");
-      }
+    const options = {
+      key: "rzp_test_QwVFufHZbexRin",
+      amount: paymentData.amount,
+      currency: paymentData.currency,
+      name: book.serviceName,
+      description: `Appointment for ${book.serviceName} on ${appointmentDetails.date} at ${appointmentDetails.timing}`,
+      image: book.img,
+      order_id: paymentData.id,
+      handler: async (response) => {
+        try {
+          const verifyUrl = "https://eunoiaserver.onrender.com/api/payment/verify";
+          const { data: verifyData } = await axios.post(verifyUrl, response);
+          console.log(verifyData);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+  if (window.Razorpay) {
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
     } else {
-      setBookingStatus("Pending Verification");
+      console.error("Razorpay script not loaded");
     }
   };
 
-  const handlePaymentSuccess = (paymentId, orderId) => {
-    const updatedBookings = [...bookings];
-    const lastIndex = updatedBookings.length - 1;
-    updatedBookings[lastIndex].payment = "Paid";
-    updatedBookings[lastIndex].paymentId = paymentId;
-    updatedBookings[lastIndex].orderId = orderId;
-    setBookings(updatedBookings);
-    setBookingStatus("Paid and Booked");
-    onClose();
-  };
-
-  const handlePaymentFailure = () => {
-    setBookingStatus("Payment Pending");
-  };
-
-  const handleIntakeFormSubmit = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings[index].status = "Intake Form Submitted";
-    setBookings(updatedBookings);
-  };
-
-  const generateOrderId = () => {
-    return Math.random().toString(36).substr(2, 9);
-  };
-
-  const generateInvoiceLink = () => {
-    console.log("Generating Invoice Link...");
+  const handlePayment = async () => {
+    try {
+      if (formCompleted) {
+        const { data: orderData } = await axios.post(
+          "https://eunoiaserver.onrender.com/api/payment/orders",
+          {
+            amount: book.price,
+            appointmentDetails: book.appointmentDetails,
+          }
+        );
+        console.log(orderData);
+        initPayment(orderData.data);
+      } else {
+        console.log("Please fill out the form completely.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <VStack color="black" spacing={4} p={isMobile ? 2 : 4}>
+    <VStack spacing={4} p={4} width="auto">
       <Box
         borderWidth="1px"
         borderRadius="md"
         color="black"
-        width={isMobile ? "100%" : "70%"}
+        width='auto'
         justifyContent={"center"}
-      >
+        p={4}>
         <Text fontSize="xl" mb={4}>
           Appointment Booking
         </Text>
-        <FormControl id="patientName" isRequired>
-          <FormLabel>Name</FormLabel>
-          <Input
-            type="text"
-            placeholder="John Doe"
-            onChange={(e) => setPatientName(e.target.value)}
-          />
-        </FormControl>
-        <FormControl id="date" isRequired>
-          <FormLabel>Date</FormLabel>
-          <Input
-            type="date"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-        </FormControl>
-        <FormControl id="time" isRequired>
-          <FormLabel>Time</FormLabel>
-          <Select
-            placeholder="Select time"
-            value={selectedTime}
-            onChange={handleTimeChange}
-          >
-            <option value="9:00 AM">9:00 AM</option>
-            <option value="10:00 PM">10:00 PM</option>
-            <option value="11:30 PM">11:30 PM</option>
-            <option value="12:00 AM">12:00 AM</option>
-            <option value="1:00 PM">1:00 PM</option>
-            <option value="2:30 PM">2:30 PM</option>
-          </Select>
-        </FormControl>
-        <Button colorScheme="teal" onClick={handleBooking} mb={4}>
-          Book Appointment
-        </Button>
-        {bookingStatus && (
-          <Box mt={4}>
-            <Text>
-              Booking Status: <strong>{bookingStatus}</strong>
-            </Text>
-            {bookingStatus === "Pending Verification" && (
-              <Payment
-                onPaymentSuccess={handlePaymentSuccess}
-                onPaymentFailure={handlePaymentFailure}
-                patientName={patientName}
-              />
-            )}
-            {bookingStatus === "Booked" && (
-              <BookingIntakeForm
-                index={bookings.length - 1}
-                onSubmit={handleIntakeFormSubmit}
-              />
-            )}
-            {bookingStatus === "Payment Failed" && (
-              <Text color="red">Payment failed. Please try again.</Text>
-            )}
-          </Box>
-        )}
-      </Box>
+        <Box className="book_container">
+          <Image src={book.img} alt="book_img" className="book_img" width={500} />
+          <Text className="book_name" fontWeight="bold" fontSize="lg">
+            {book.serviceName}
+          </Text>
+          <Text className="book_companyName" color="gray.600">
+            By {book.companyName}
+          </Text>
+          <Text className="book_price" color="green.500" fontWeight="bold">
+            Price: <span>&#x20B9; {book.price}</span>
+          </Text>
+          <Text className="book_companyName" color="gray.600">
+            Duration: 1hr
+          </Text>
+          {/* Add UI elements for date, name, age, and timing inputs */}
+          <FormControl mt={4} isRequired>
+            <FormLabel>Name</FormLabel>
+            <Input
+              type="text"
+              value={appointmentDetails.name}
+              onChange={(e) =>
+                setAppointmentDetails({
+                  ...appointmentDetails,
+                  name: e.target.value,
+                })
+              }
+            />
+          </FormControl>
 
-      <Box borderWidth="1px" borderRadius="md" color="black" width="100%" overflowX="auto">
-        <Text fontSize="xl" mb={4}>
-          Booking List
-        </Text>
-        {bookings.length === 0 ? (
-          <Text>No bookings yet.</Text>
-        ) : (
-          <Table variant="simple">
-            <Thead display={{ base: 'none', md: 'table-header-group' }}>
-              <Tr>
-                <Th>Name</Th>
-                <Th>Date</Th>
-                <Th>Time</Th>
-                <Th>Payment</Th>
-                <Th>Status</Th>
-                <Th>Order ID</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {bookings.map((booking, index) => (
-                <Tr key={index}>
-                  <Td>{booking.name}</Td>
-                  <Td>{booking.date}</Td>
-                  <Td>{booking.time}</Td>
-                  <Td>{booking.payment}</Td>
-                  <Td>{booking.status}</Td>
-                  <Td>{booking.orderId || "-"}</Td>
-                  <Td>
-                    {booking.payment === "Paid" && (
-                      <>
-                        <Button
-                          colorScheme="purple"
-                          onClick={generateInvoiceLink}
-                          display={{ base: 'none', md: 'block' }}
-                        >
-                          Generate Invoice
-                        </Button>
-                        <BookingIntakeForm
-                          index={index}
-                          onSubmit={handleIntakeFormSubmit}
-                          display={{ base: 'none', md: 'block' }}
-                        />
-                      </>
-                    )}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        )}
+          <FormControl mt={4} isRequired>
+            <FormLabel>Age</FormLabel>
+            <Input
+              type="number"
+              value={appointmentDetails.age}
+              onChange={(e) =>
+                setAppointmentDetails({
+                  ...appointmentDetails,
+                  age: e.target.value,
+                })
+              }
+            />
+          </FormControl>
+
+          <FormControl isRequired>
+            <FormLabel>Date</FormLabel>
+            <Input
+              type="date"
+              value={appointmentDetails.date}
+              onChange={(e) =>
+                setAppointmentDetails({
+                  ...appointmentDetails,
+                  date: e.target.value,
+                })
+              }
+            />
+          </FormControl>
+
+          <FormControl id="time" isRequired mt={4}>
+            <FormLabel>Time</FormLabel>
+            <Select
+              placeholder="Select time"
+              value={appointmentDetails.timing}
+              onChange={(e) =>
+                setAppointmentDetails({
+                  ...appointmentDetails,
+                  timing: e.target.value,
+                })
+              }
+            >
+              <option value="9:00 AM">9:00 AM</option>
+              <option value="10:00 PM">10:00 AM</option>
+              <option value="11:30 PM">11:30 AM</option>
+              <option value="12:00 AM">12:00 AM</option>
+              <option value="1:00 PM">1:00 AM</option>
+              <option value="2:30 PM">2:30 AM</option>
+            </Select>
+          </FormControl>
+
+          {/* Enable the "Book" button only when the form is completed */}
+          <Button
+            onClick={handlePayment}
+            colorScheme="teal"
+            variant="solid"
+            mt={4}
+            disabled={!formCompleted}
+          >
+            Book
+          </Button>
+        </Box>
       </Box>
     </VStack>
   );

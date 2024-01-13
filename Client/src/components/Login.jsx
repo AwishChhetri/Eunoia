@@ -7,6 +7,7 @@ import {
   InputGroup,
   VStack,
   Button,
+  Spinner, // Import Spinner component
 } from '@chakra-ui/react';
 
 import axios from 'axios';
@@ -16,6 +17,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // State to manage loading state
 
   const handleClick = () => setShow(!show);
   const history = useHistory();
@@ -42,6 +44,8 @@ const Login = () => {
 
   const submitHandler = async () => {
     try {
+      setLoading(true); // Set loading state to true when login button is clicked
+
       const response = await axios.post('https://eunoiaserver.onrender.com/api/login', {
         email,
         password,
@@ -61,6 +65,8 @@ const Login = () => {
       history.push('/dash');
     } catch (error) {
       console.error('Error during login:', error.message);
+    } finally {
+      setLoading(false); // Set loading state to false when the request is completed
     }
   };
 
@@ -96,8 +102,10 @@ const Login = () => {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
+        isLoading={loading} // Set isLoading prop based on loading state
+        loadingText="Logging in..." // Optional text to display during loading
       >
-        Login
+        {loading ? <Spinner /> : 'Login'}
       </Button>
     </VStack>
   );

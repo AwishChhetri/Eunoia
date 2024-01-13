@@ -8,10 +8,12 @@ import {
   Select,
   VStack,
   Button,
+  Spinner,
 } from "@chakra-ui/react";
-
-import axios from 'axios'; // Make sure to install axios: npm install axios
+import axios from 'axios';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Swal from 'sweetalert2'; // Import SweetAlert
+
 const SignUp = () => {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
@@ -22,20 +24,42 @@ const SignUp = () => {
   const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   const handleClick = () => setShow(!show);
-  const history = useHistory();
+
+  const showSuccessAlert = (message) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: message,
+    });
+  };
+
+  const showErrorAlert = (message) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: message,
+    });
+  };
+
   const submitHandler = async () => {
+    setLoading(true);
+
     if (!name || !email || !password || !confirmPassword) {
-      console.log('Please fill in all the required fields.');
+      showErrorAlert('Please fill in all the required fields.');
+      setLoading(false);
       return;
     }
-  
+
     if (password !== confirmPassword) {
-      console.log('Password and Confirm Password must match.');
+      showErrorAlert('Password and Confirm Password must match.');
+      setLoading(false);
       return;
     }
-  
+
     try {
       const response = await axios.post('https://eunoiaserver.onrender.com/signup', {
         email,
@@ -46,11 +70,10 @@ const SignUp = () => {
         gender,
         password,
       });
-  
+
       const { token } = response.data;
-  
       localStorage.setItem('token', token);
-  
+
       setName("");
       setEmail("");
       setPhoneNumber("");
@@ -59,66 +82,19 @@ const SignUp = () => {
       setGender("");
       setPassword("");
       setConfirmPassword("");
-  
-      console.log('Registration successful!');
+
+      showSuccessAlert('Registration successful!');
       history.push('/dash');
     } catch (error) {
       console.error('Error during registration:', error.message);
+      showErrorAlert('Error during registration. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
-  
-  // Add a function to check token expiration
-  const isTokenExpired = () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      // Token is not available, user needs to log in
-      return true;
-    }
-  
-    try {
-      const decodedToken = jwt.decode(token);
-  
-      // Check if the token is expired
-      if (decodedToken.exp * 1000 < Date.now()) {
-        // Token is expired, user needs to log in
-        return true;
-      }
-  
-      // Token is still valid
-      return false;
-    } catch (error) {
-      // Token is invalid, user needs to log in
-      return true;
-    }
-  };
-  
-  // Example usage: check token expiration before making requests
-  const someRequest = async () => {
-    if (isTokenExpired()) {
-      console.log('Token is expired. Redirect to login page.');
-      // Redirect to the login page
-      history.push('/login');
-      return;
-    }
-  
-    // Continue with your request logic here
-    try {
-      const response = await axios.get('http://example.com/some-api-endpoint', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-  
-      // Handle the response
-      console.log('API response:', response.data);
-    } catch (error) {
-      console.error('Error making API request:', error.message);
-    }
-  };
-  
 
   return (
-    <VStack spacing="5px" color="black">
+<VStack spacing="5px" color="black">
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input
@@ -180,16 +156,6 @@ const SignUp = () => {
         </Select>
       </FormControl>
 
-      {/* <FormControl id="pic" isRequired>
-        <FormLabel>Upload your Picture</FormLabel>
-        <Input
-          type="file"
-          p={1.5}
-          accept="image/*"
-          onChange={(e) => postDetails(e.target.value)}
-        />
-      </FormControl> */}
-
       <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
         <InputGroup>
@@ -231,8 +197,10 @@ const SignUp = () => {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
+        isLoading={loading} // Set isLoading prop based on loading state
+        loadingText="Signing Up..." // Optional text to display during loading
       >
-        Sign Up
+        {loading ? <Spinner /> : 'Sign Up'}
       </Button>
     </VStack>
   );
