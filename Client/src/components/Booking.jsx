@@ -1,19 +1,10 @@
+// Booking.jsx
 import axios from "axios";
 import { useState, useEffect } from "react";
 import image from "../assets/hello.jpg";
-import {
-  Box,
-  Image,
-  Text,
-  Button,
-  FormControl,
-  Select,
-  FormLabel,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
-
+import { Box, Image, Text, Button, FormControl, Select, FormLabel, Input, VStack } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
+import Invoice from "./Invoice.jsx";
 
 export const Booking = () => {
   const [appointmentDetails, setAppointmentDetails] = useState({
@@ -32,17 +23,16 @@ export const Booking = () => {
   });
 
   const [formCompleted, setFormCompleted] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
-    // Check if all required fields are filled
     const isFormCompleted =
       appointmentDetails.name &&
       appointmentDetails.age &&
       appointmentDetails.date &&
       appointmentDetails.timing;
 
-    // Update formCompleted state
     setFormCompleted(isFormCompleted);
   }, [appointmentDetails]);
 
@@ -69,9 +59,7 @@ export const Booking = () => {
       order_id: paymentData.id,
       handler: async (response) => {
         try {
-          const verifyUrl = "https://eunoiaserver.onrender.com/api/payment/verify";
-          const { data: verifyData } = await axios.post(verifyUrl, response);
-          console.log(verifyData);
+          handlePaymentSuccess(response);
         } catch (error) {
           console.log(error);
         }
@@ -88,40 +76,31 @@ export const Booking = () => {
       console.error("Razorpay script not loaded");
     }
   };
-  const handlePayment = async () => {
-    try {
-      if (formCompleted) {
-        setLoading(true); // Set loading to true when form is being submitted
 
-        const { data: orderData } = await axios.post(
-          "https://eunoiaserver.onrender.com/api/payment/orders",
-          {
-            amount: book.price,
-            appointmentDetails: book.appointmentDetails,
-          }
-        );
-        console.log(orderData);
-        initPayment(orderData.data);
-      } else {
-        console.log("Please fill out the form completely.");
-      }
+  const handlePaymentSuccess = async (response) => {
+    try {
+      setLoading(true);
+
+      const verifyUrl = "https://eunoiaserver.onrender.com/api/payment/verify";
+      const { data: verifyData } = await axios.post(verifyUrl, response);
+      console.log(verifyData);
+
+      setInvoiceData({
+        serviceName: book.serviceName,
+        companyName: book.companyName,
+        amount: book.price,
+        // Add other invoice details
+      });
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false); // Set loading back to false when done processing
+      setLoading(false);
     }
   };
 
-
   return (
     <VStack spacing={4} p={4} width="auto">
-      <Box
-        borderWidth="1px"
-        borderRadius="md"
-        color="black"
-        width='auto'
-        justifyContent={"center"}
-        p={4}>
+      <Box borderWidth="1px" borderRadius="md" color="black" width="auto" justifyContent={"center"} p={4}>
         <Text fontSize="xl" mb={4}>
           Appointment Booking
         </Text>
@@ -139,7 +118,7 @@ export const Booking = () => {
           <Text className="book_companyName" color="gray.600">
             Duration: 1hr
           </Text>
-          {/* Add UI elements for date, name, age, and timing inputs */}
+
           <FormControl mt={4} isRequired>
             <FormLabel>Name</FormLabel>
             <Input
@@ -203,18 +182,19 @@ export const Booking = () => {
             </Select>
           </FormControl>
 
-          {/* Enable the "Book" button only when the form is completed */}
           <Button
-        onClick={handlePayment}
-        colorScheme="teal"
-        variant="solid"
-        mt={4}
-        disabled={!formCompleted || loading} // Disable button when form is incomplete or loading
-      >
-        {loading ? <Spinner size="sm" /> : "Book"} {/* Show loader or button text */}
-      </Button>
+            onClick={initPayment}
+            colorScheme="teal"
+            variant="solid"
+            mt={4}
+            disabled={!formCompleted || loading}
+          >
+            {loading ? <Spinner size="sm" /> : "Book"}
+          </Button>
         </Box>
       </Box>
+
+      {invoiceData && <Invoice invoiceData={invoiceData} />}
     </VStack>
   );
 };
