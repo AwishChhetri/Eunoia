@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import image from "../assets/hello.jpg"
+import image from "../assets/hello.jpg";
 import {
   Box,
   Image,
@@ -13,23 +13,38 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { Spinner } from "@chakra-ui/react";
+
 export const Booking = () => {
   const [appointmentDetails, setAppointmentDetails] = useState({
     date: "",
     name: "",
     timing: "",
-    age: "", 
+    age: "",
   });
 
   const [book, setBook] = useState({
     serviceName: "One to One Virtual Counselling",
-    companyName: "Eunoia", 
+    companyName: "Eunoia",
     img: `${image}`,
     price: 999,
     appointmentDetails: { ...appointmentDetails },
   });
 
   const [formCompleted, setFormCompleted] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
+
+  useEffect(() => {
+    // Check if all required fields are filled
+    const isFormCompleted =
+      appointmentDetails.name &&
+      appointmentDetails.age &&
+      appointmentDetails.date &&
+      appointmentDetails.timing;
+
+    // Update formCompleted state
+    setFormCompleted(isFormCompleted);
+  }, [appointmentDetails]);
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -65,17 +80,19 @@ export const Booking = () => {
         color: "#3399cc",
       },
     };
-  if (window.Razorpay) {
+
+    if (window.Razorpay) {
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } else {
       console.error("Razorpay script not loaded");
     }
   };
-
   const handlePayment = async () => {
     try {
       if (formCompleted) {
+        setLoading(true); // Set loading to true when form is being submitted
+
         const { data: orderData } = await axios.post(
           "https://eunoiaserver.onrender.com/api/payment/orders",
           {
@@ -90,8 +107,11 @@ export const Booking = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading back to false when done processing
     }
   };
+
 
   return (
     <VStack spacing={4} p={4} width="auto">
@@ -185,14 +205,14 @@ export const Booking = () => {
 
           {/* Enable the "Book" button only when the form is completed */}
           <Button
-            onClick={handlePayment}
-            colorScheme="teal"
-            variant="solid"
-            mt={4}
-            disabled={!formCompleted}
-          >
-            Book
-          </Button>
+        onClick={handlePayment}
+        colorScheme="teal"
+        variant="solid"
+        mt={4}
+        disabled={!formCompleted || loading} // Disable button when form is incomplete or loading
+      >
+        {loading ? <Spinner size="sm" /> : "Book"} {/* Show loader or button text */}
+      </Button>
         </Box>
       </Box>
     </VStack>
