@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+// import jwt from "jsonwebtoken";
+
+
 import {
   FormControl,
   FormLabel,
@@ -74,13 +77,13 @@ const Login = () => {
         const { token } = response.data;
         
         // Extract user ID from the token
-        const decodedToken = jwt.decode(token);
-        const userId = decodedToken.userId;
-  
+        // const decodedToken = jwt.decode(token);
+        // const userId = decodedToken.userId;
+        // console.log(userId )
         localStorage.setItem('token', token);
   
         setSessionTimeoutCallback();
-        history.push(`/dash/${userId}`); // Assuming you want to pass userId as a parameter to /dash
+        history.push(`/dash`); // Assuming you want to pass userId as a parameter to /dash
       } else {
         showAlert('Error', 'Invalid email or password', 'error');
       }
