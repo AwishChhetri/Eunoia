@@ -107,7 +107,7 @@ const SignUp = () => {
       setConfirmPassword("");
 
       showSuccessAlert('Registration successful!');
-      history.push('/dash');
+      history.push('/');
     } catch (error) {
       console.error('Error during registration:', error.message);
       showErrorAlert('Error during registration. Please try again.');
