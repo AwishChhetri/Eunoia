@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { VStack, Box, Avatar, Text, Button, Flex, IconButton, useMediaQuery, Icon } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaTimes, FaFileAlt, FaUser, FaBrain, FaCalendarAlt, FaSignOutAlt } from 'react-icons/fa';
+import axios from 'axios';
+import { useUser } from '../userContext.jsx'; // Adjust the path accordingly
 
 export const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(!useMediaQuery("(max-width: 600px)")[0]);
   const [isMobile] = useMediaQuery("(max-width: 600px)");
+  const { userId } = useUser(); // Use the useUser hook to get userId
+  const [userData, setUserData] = useState(null); // State to store user data
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -14,6 +18,23 @@ export const Sidebar = () => {
   const handleCloseSidebar = () => {
     setIsSidebarOpen(false);
   };
+
+  useEffect(() => {
+    // Fetch user data from the backend API using the userId
+    const getUserData = async () => {
+      try {
+        const response = await axios.get(`/userdata/${userId}`);
+        setUserData(response.data);
+        console.log(response.data)
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      }
+    };
+
+    if (userId) {
+      getUserData();
+    }
+  }, [userId]); 
 
   return (
     <>
@@ -48,7 +69,7 @@ export const Sidebar = () => {
           <VStack align="start" mt={4} spacing="4">
             <Box>
               <Avatar size="md" name="John Doe" src="https://placekitten.com/g/100/100" />
-              <Text mt={2}>John Doe</Text>
+              <Text mt={2}>{userData && userData.name}</Text>
             </Box>
             <Button colorScheme="teal" variant="solid" size="md" w="100%" leftIcon={<Icon as={FaFileAlt} />}>
               <Link to="/intake-form">

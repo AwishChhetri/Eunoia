@@ -1,10 +1,12 @@
-// Booking.jsx
+// Booking.js
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { VStack, Box, Spinner, Text } from "@chakra-ui/react";
+import { Invoice } from "./Invoice";
+import { BookingDetails } from "./BookingDetails";
+import { FormInputs } from "./FormInputs";
+import { BookButton } from "./BookButton";
 import image from "../assets/hello.jpg";
-import { Box, Image, Text, Button, FormControl, Select, FormLabel, Input, VStack } from "@chakra-ui/react";
-import { Spinner } from "@chakra-ui/react";
-import Invoice from "./Invoice.jsx";
 
 export const Booking = () => {
   const [appointmentDetails, setAppointmentDetails] = useState({
@@ -14,17 +16,18 @@ export const Booking = () => {
     age: "",
   });
 
-  const [book, setBook] = useState({
+  const [bookingDetails, setBookingDetails] = useState({
     serviceName: "One to One Virtual Counselling",
     companyName: "Eunoia",
     img: `${image}`,
     price: 999,
-    appointmentDetails: { ...appointmentDetails },
   });
 
+  const [orderDetails, setOrderDetails] = useState(null);
+
+  const [invoiceData, setInvoiceData] = useState(null);
   const [formCompleted, setFormCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
     const isFormCompleted =
@@ -53,12 +56,15 @@ export const Booking = () => {
       key: "rzp_test_QwVFufHZbexRin",
       amount: paymentData.amount,
       currency: paymentData.currency,
-      name: book.serviceName,
-      description: `Appointment for ${book.serviceName} on ${appointmentDetails.date} at ${appointmentDetails.timing}`,
-      image: book.img,
+      name: bookingDetails.serviceName,
+      description: `Appointment for ${bookingDetails.serviceName} on ${appointmentDetails.date} at ${appointmentDetails.timing}`,
+      image: bookingDetails.img,
       order_id: paymentData.id,
       handler: async (response) => {
         try {
+          const verifyUrl = "/api/payment/verify";
+          const { data: verifyData } = await axios.post(verifyUrl, response);
+
           handlePaymentSuccess(response);
         } catch (error) {
           console.log(error);
@@ -77,19 +83,48 @@ export const Booking = () => {
     }
   };
 
+  const handlePayment = async () => {
+    try {
+      if (formCompleted) {
+        setLoading(true);
+
+        const { data: orderData } = await axios.post(
+          "/api/payment/orders",
+          {
+            amount: bookingDetails.price,
+            appointmentDetails: appointmentDetails,
+          }
+        );
+
+        // Store order details in state
+        setOrderDetails(orderData.data);
+
+        initPayment(orderData.data);
+      } else {
+        console.log("Please fill out the form completely.");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePaymentSuccess = async (response) => {
     try {
       setLoading(true);
 
-      const verifyUrl = "https://eunoiaserver.onrender.com/api/payment/verify";
-      const { data: verifyData } = await axios.post(verifyUrl, response);
-      console.log(verifyData);
+      // Store booking details in state
+      setBookingDetails({
+        ...bookingDetails,
+        appointmentDetails: appointmentDetails,
+      });
 
+      // Store invoice data in state
       setInvoiceData({
-        serviceName: book.serviceName,
-        companyName: book.companyName,
-        amount: book.price,
-        // Add other invoice details
+        serviceName: bookingDetails.serviceName,
+        companyName: bookingDetails.companyName,
+        amount: bookingDetails.price,
       });
     } catch (error) {
       console.log(error);
@@ -100,98 +135,27 @@ export const Booking = () => {
 
   return (
     <VStack spacing={4} p={4} width="auto">
-      <Box borderWidth="1px" borderRadius="md" color="black" width="auto" justifyContent={"center"} p={4}>
+      <Box
+        borderWidth="1px"
+        borderRadius="md"
+        color="black"
+        width="auto"
+        justifyContent={"center"}
+        p={4}
+      >
         <Text fontSize="xl" mb={4}>
           Appointment Booking
         </Text>
-        <Box className="book_container">
-          <Image src={book.img} alt="book_img" className="book_img" width={500} />
-          <Text className="book_name" fontWeight="bold" fontSize="lg">
-            {book.serviceName}
-          </Text>
-          <Text className="book_companyName" color="gray.600">
-            By {book.companyName}
-          </Text>
-          <Text className="book_price" color="green.500" fontWeight="bold">
-            Price: <span>&#x20B9; {book.price}</span>
-          </Text>
-          <Text className="book_companyName" color="gray.600">
-            Duration: 1hr
-          </Text>
-
-          <FormControl mt={4} isRequired>
-            <FormLabel>Name</FormLabel>
-            <Input
-              type="text"
-              value={appointmentDetails.name}
-              onChange={(e) =>
-                setAppointmentDetails({
-                  ...appointmentDetails,
-                  name: e.target.value,
-                })
-              }
-            />
-          </FormControl>
-
-          <FormControl mt={4} isRequired>
-            <FormLabel>Age</FormLabel>
-            <Input
-              type="number"
-              value={appointmentDetails.age}
-              onChange={(e) =>
-                setAppointmentDetails({
-                  ...appointmentDetails,
-                  age: e.target.value,
-                })
-              }
-            />
-          </FormControl>
-
-          <FormControl isRequired>
-            <FormLabel>Date</FormLabel>
-            <Input
-              type="date"
-              value={appointmentDetails.date}
-              onChange={(e) =>
-                setAppointmentDetails({
-                  ...appointmentDetails,
-                  date: e.target.value,
-                })
-              }
-            />
-          </FormControl>
-
-          <FormControl id="time" isRequired mt={4}>
-            <FormLabel>Time</FormLabel>
-            <Select
-              placeholder="Select time"
-              value={appointmentDetails.timing}
-              onChange={(e) =>
-                setAppointmentDetails({
-                  ...appointmentDetails,
-                  timing: e.target.value,
-                })
-              }
-            >
-              <option value="9:00 AM">9:00 AM</option>
-              <option value="10:00 PM">10:00 AM</option>
-              <option value="11:30 PM">11:30 AM</option>
-              <option value="12:00 AM">12:00 AM</option>
-              <option value="1:00 PM">1:00 AM</option>
-              <option value="2:30 PM">2:30 AM</option>
-            </Select>
-          </FormControl>
-
-          <Button
-            onClick={initPayment}
-            colorScheme="teal"
-            variant="solid"
-            mt={4}
-            disabled={!formCompleted || loading}
-          >
-            {loading ? <Spinner size="sm" /> : "Book"}
-          </Button>
-        </Box>
+        <BookingDetails {...bookingDetails} />
+        <FormInputs
+          appointmentDetails={appointmentDetails}
+          setAppointmentDetails={setAppointmentDetails}
+        />
+        <BookButton
+          handlePayment={handlePayment}
+          formCompleted={formCompleted}
+          loading={loading}
+        />
       </Box>
 
       {invoiceData && <Invoice invoiceData={invoiceData} />}

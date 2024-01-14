@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import jwt from "jsonwebtoken";
-
-
 import {
   FormControl,
   FormLabel,
@@ -14,7 +11,8 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
+import { useUser } from '../userContext.jsx';
 
 const Login = () => {
   const [show, setShow] = useState(false);
@@ -23,6 +21,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
   const [sessionTimeout, setSessionTimeout] = useState(null);
+  const { setUserId, setToken } = useUser();
 
   useEffect(() => {
     return () => {
@@ -36,7 +35,7 @@ const Login = () => {
     const sessionTimeoutId = setTimeout(() => {
       localStorage.removeItem('token');
       history.push('/');
-    }, 30 * 60 * 1000);
+    },15*60 * 10000); // 1 hour session timeout
 
     setSessionTimeout(sessionTimeoutId);
   };
@@ -65,25 +64,30 @@ const Login = () => {
       if (!validateInputs()) {
         return;
       }
-  
+
       setLoading(true);
-  
-      const response = await axios.post('https://eunoiaserver.onrender.com/api/login', {
+
+      const response = await axios.post('/api/login', {
         email,
         password,
       });
-  
+
+      console.log('Login API Response:', response); // Log the entire response for debugging
+
       if (response.status === 200) {
-        const { token } = response.data;
-        
-        // Extract user ID from the token
-        // const decodedToken = jwt.decode(token);
-        // const userId = decodedToken.userId;
-        // console.log(userId )
+        const { token, userId } = response.data;
+        console.log(response.data)
+        // Store the userId and token in the context
+        setUserId(userId);
+        setToken(token);
+
+        // Store the token and userId in localStorage (if needed)
         localStorage.setItem('token', token);
-  
+        localStorage.setItem('userId', userId);
+
+        // Continue with your navigation logic
         setSessionTimeoutCallback();
-        history.push(`/dash`); // Assuming you want to pass userId as a parameter to /dash
+        history.push(`/dash`);
       } else {
         showAlert('Error', 'Invalid email or password', 'error');
       }
@@ -94,7 +98,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <VStack spacing="5px" color="black">

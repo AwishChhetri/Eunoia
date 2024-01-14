@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import {
   FormControl,
   FormLabel,
@@ -14,6 +13,7 @@ import {
 import axios from 'axios';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Swal from 'sweetalert2'; // Import SweetAlert
+import { useUser } from '../userContext.jsx';
 
 const SignUp = () => {
   const [show, setShow] = useState(false);
@@ -27,6 +27,8 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
+  const { setUserId, setToken } = useUser();
+  const [sessionTimeout, setSessionTimeout] = useState(null);
 
   const handleClick = () => setShow(!show);
 
@@ -62,8 +64,9 @@ const SignUp = () => {
     }
 
     try {
-      const response = await axios.post('https://eunoiaserver.onrender.com/signup', {
+      const response = await axios.post('/signup', {
         email,
+        name,
         password,
         phoneNumber,
         age,
@@ -72,8 +75,27 @@ const SignUp = () => {
         password,
       });
 
-      const { token } = response.data;
+      const { token, userId } = response.data;
+
+      // Store the userId and token in the context
+      setUserId(userId);
+      setToken(token);
+
+      // Store the token and userId in localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+
+      // Set up session timing (e.g., 1-hour session timeout)
+      const sessionTimeoutId = setTimeout(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        setUserId(null);
+        setToken(null);
+        history.push('/');
+      }, 60 * 60 * 1000); // 1 hour session timeout
+
+      // Save the session timeout ID in state for cleanup
+      setSessionTimeout(sessionTimeoutId);
 
       setName("");
       setEmail("");
