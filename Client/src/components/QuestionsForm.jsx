@@ -61,7 +61,7 @@ export const QuestionsForm = ({ currentQuestion, questions, options, selectedOpt
           Submit
         </Button>
       ) : (
-        <Button w="100%" colorScheme="teal" onClick={handleNextQuestion}>
+        <Button w="" colorScheme="teal" onClick={handleNextQuestion}>
           Next Question
         </Button>
       )}

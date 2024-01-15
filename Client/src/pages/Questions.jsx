@@ -12,6 +12,7 @@ Flex,
 import { Sidebar } from '../components/Sidebar.jsx';
 import {TestRules} from '../components/TestRules.jsx';
 import {QuestionsForm} from '../components/QuestionsForm.jsx';
+import { ResultComponent } from '../components/ResultComponents.jsx';
 export const Questions = () => {
   const questionsWithOptions = {
     "I am not a worrier.": { 'Strongly Disagree': 4, Disagree: 3, Neutral: 2, Agree: 1, 'Strongly Agree': 0 },
@@ -88,7 +89,7 @@ export const Questions = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [testStarted, setTestStarted] = useState(false);
   const [agreementChecked, setAgreementChecked] = useState(false);
-
+  const [testGiven, setTestGiven] = useState(true); 
   useEffect(() => {
     if (isTimerRunning) {
       const timerInterval = setInterval(() => {
@@ -148,6 +149,7 @@ export const Questions = () => {
 
     const resultArray = [N, E, O, A, C];
     console.log("Result Array:", resultArray);
+    setTestGiven(true);
 };
 
   const startTest = () => {
@@ -167,56 +169,62 @@ export const Questions = () => {
 
   return (
     <Flex direction={{ base: 'column', md: 'row' }} minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
-    <Sidebar display={{ base: 'none', md: 'solid' }} />
-    <Flex flex="1" direction="column" p="8" ml={{ base: '0', md: '260px' /* Adjust the value as needed */ }}>
+      <Sidebar display={{ base: 'none', md: 'solid' }} />
+      <Flex flex="1" direction="column" p="8" ml={{ base: '0', md: '260px' }}>
         {/* Main Content */}
-        <Box p="6" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
-          <Container maxW="xl" centerContent>
-            <Box
-              display={{ base: 'block', md: 'flex' }}
-              justifyContent="center"
-              p={3}
-              bg={'white'}
-              w="100%"
-              m={{ base: '40px 0 15px 0', md: '20px 0 15px 0' }}
-              borderRadius="lg"
-              borderWidth="1px"
-            >
-              <Text fontSize={{ base: '4xl', md: '2xl' }} fontFamily="Work Sans" color="black">
-                Personality Test
-              </Text>
-            </Box>
-          </Container>
-          <VStack align="center" spacing="4" mt="4">
-            <Image src={logo} alt="Personality Test Logo" boxSize={{ base: '200px', md: '150px' }} />
-
-            {!testStarted && <TestRules agreementChecked={agreementChecked} onAgreementChange={setAgreementChecked} />}
-
-            {testStarted && currentQuestion < questions.length && (
-              <QuestionsForm
-                currentQuestion={currentQuestion}
-                questions={questions}
-                options={questionsWithOptions[questions[currentQuestion]]}
-                selectedOptions={selectedOptions}
-                onOptionChange={handleOptionChange}
-                onNextQuestion={handleNextQuestion}
-                onSubmit={handleSubmission}
-                timer={timer}
-              />
-            )}
-
-            {!testStarted && (
-              <Button
-                colorScheme="teal"
-                onClick={startTest}
-                isDisabled={!agreementChecked}
-                mt="4"
+        {testGiven ? (
+          // If the test is already given, display the result component
+          <ResultComponent />
+        ) : (
+          // If the test is not given, display the personality test component
+          <Box p="6" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
+            <Container maxW="xl" centerContent>
+              <Box
+                display={{ base: 'block', md: 'flex' }}
+                justifyContent="center"
+                p={3}
+                bg={'white'}
+                w="100%"
+                m={{ base: '40px 0 15px 0', md: '20px 0 15px 0' }}
+                borderRadius="lg"
+                borderWidth="1px"
               >
-                Start Test
-              </Button>
-            )}
-          </VStack>
-        </Box>
+                <Text fontSize={{ base: '4xl', md: '2xl' }} fontFamily="Work Sans" color="black">
+                  Personality Test
+                </Text>
+              </Box>
+            </Container>
+            <VStack align="center" spacing="4" mt="4">
+              <Image src={logo} alt="Personality Test Logo" boxSize={{ base: '200px', md: '150px' }} />
+
+              {!testStarted && <TestRules agreementChecked={agreementChecked} onAgreementChange={setAgreementChecked} />}
+
+              {testStarted && currentQuestion < questions.length && (
+                <QuestionsForm
+                  currentQuestion={currentQuestion}
+                  questions={questions}
+                  options={questionsWithOptions[questions[currentQuestion]]}
+                  selectedOptions={selectedOptions}
+                  onOptionChange={handleOptionChange}
+                  onNextQuestion={handleNextQuestion}
+                  onSubmit={handleSubmission}
+                  timer={timer}
+                />
+              )}
+
+              {!testStarted && (
+                <Button
+                  colorScheme="teal"
+                  onClick={startTest}
+                  isDisabled={!agreementChecked}
+                  mt="4"
+                >
+                  Start Test
+                </Button>
+              )}
+            </VStack>
+          </Box>
+        )}
         {/* Footer component */}
         <Box mt="auto" textAlign="center">
           <Text fontSize="sm" color="gray.500">
