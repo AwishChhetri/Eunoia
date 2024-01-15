@@ -174,26 +174,28 @@ export const Questions = () => {
 
     try {
       const response = await axios.post(`/personality-test/${userId}`, {
-      openness,
-      conscientiousness,
-      extraversion,
-      agreeableness,
-      neuroticism,
+        openness,
+        conscientiousness,
+        extraversion,
+        agreeableness,
+        neuroticism,
       });
-
+  
       if (response.status === 200) {
         console.log('Personality test data submitted successfully!');
         setTestGiven(true);
+  
+        // Reload the page after the test is submitted
+        window.location.reload();
       } else {
         console.error('Error submitting personality test data:', response.statusText);
       }
-
+  
       setTestGiven(true);
     } catch (error) {
       console.error('Error submitting personality test data:', error.message);
     }
   };
-
   const startTest = () => {
     setTestStarted(true);
     setIsTimerRunning(true);
