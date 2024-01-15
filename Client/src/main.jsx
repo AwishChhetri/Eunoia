@@ -6,7 +6,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { UserProvider } from './userContext.jsx';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://eunoiaserver.onrender.com'; 
+axios.defaults.baseURL = 'https://server-ii7l.onrender.com'; 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   
