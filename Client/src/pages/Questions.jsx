@@ -1,5 +1,7 @@
 import {useState, useEffect} from 'react';
 import logo from "../assets/logo.png";
+import axios from "axios";
+import { useUser } from '../userContext.jsx';
 import {
   VStack,
   Button,
@@ -79,8 +81,6 @@ export const Questions = () => {
   
   
   
-  
-
   const questions = Object.keys(questionsWithOptions);
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -89,7 +89,48 @@ export const Questions = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [testStarted, setTestStarted] = useState(false);
   const [agreementChecked, setAgreementChecked] = useState(false);
-  const [testGiven, setTestGiven] = useState(true); 
+  const [testGiven, setTestGiven] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const { userId } = useUser();
+  const [userinfo, setUserinfo] = useState(null); 
+  useEffect(() => {
+    // Fetch user data from the backend API using the userId
+    
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get(`/userdata/${userId}`);
+        setUserinfo(response.data);
+        
+        console.log("User Info",response.data)
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      }
+    };
+    console.log("Siderbar")
+
+    if (userId) {
+      getUserInfo();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    console.log(userId)
+    const getUserData = async () => {
+      try {
+        const response = await axios.get(`/personality-test/data/${userId}`);
+        setUserData(response.data);
+        setTestGiven(true);
+        console.log("personality-test",response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      }
+    };
+
+    if (userId) {
+      getUserData();
+    }
+  }, [userId]);
+
   useEffect(() => {
     if (isTimerRunning) {
       const timerInterval = setInterval(() => {
@@ -98,7 +139,7 @@ export const Questions = () => {
         } else {
           setIsTimerRunning(false);
           clearInterval(timerInterval);
-          handleRestartTest(); // Restart the test when the timer reaches 0
+          handleRestartTest();
         }
       }, 1000);
 
@@ -116,41 +157,57 @@ export const Questions = () => {
     setCurrentQuestion((prevQuestion) => prevQuestion + 1);
   };
 
-  const handleSubmission = () => {
-    // Handle the submission logic here, e.g., send selectedOptions to a server
-    console.log('Submitted:', selectedOptions);
-
-    const selectedIndices1 = Array.from({ length: 12 }, (_, index) => index*5);
+  const handleSubmission = async () => {
+    const selectedIndices1 = Array.from({ length: 12 }, (_, index) => index * 5);
     const selectedIndices2 = Array.from({ length: 12 }, (_, index) => index + 1);
     const selectedIndices3 = Array.from({ length: 12 }, (_, index) => index + 2);
     const selectedIndices4 = Array.from({ length: 12 }, (_, index) => index + 3);
     const selectedIndices5 = Array.from({ length: 12 }, (_, index) => index + 4);
 
-    console.log("Selected Indices 1:", selectedIndices1);
-    console.log("Selected Indices 2:", selectedIndices2);
-    console.log("Selected Indices 3:", selectedIndices3);
-    console.log("Selected Indices 4:", selectedIndices4);
-    console.log("Selected Indices 5:", selectedIndices5);
-
     const N = selectedIndices1.reduce((sum, index) => sum + (selectedOptions[index] || 0), 0);
-    console.log("Sum of Index N:", N);
-
     const E = selectedIndices2.reduce((sum, index) => sum + (selectedOptions[index] || 0), 0);
-    console.log("Sum of Index E:", E);
-
     const O = selectedIndices3.reduce((sum, index) => sum + (selectedOptions[index] || 0), 0);
-    console.log("Sum of Index O:", O);
-
     const A = selectedIndices4.reduce((sum, index) => sum + (selectedOptions[index] || 0), 0);
-    console.log("Sum of Index A:", A);
-
     const C = selectedIndices5.reduce((sum, index) => sum + (selectedOptions[index] || 0), 0);
-    console.log("Sum of Index C:", C);
 
     const resultArray = [N, E, O, A, C];
-    console.log("Result Array:", resultArray);
-    setTestGiven(true);
-};
+
+    const personalityTestData = {
+      openness: N,
+      conscientiousness: E,
+      extraversion: O,
+      agreeableness: A,
+      neuroticism: C,
+    };
+    console.log(personalityTestData);
+
+    const openness= N;
+    const conscientiousness= E
+    const extraversion= O
+    const agreeableness= A
+    const neuroticism= C
+
+    try {
+      const response = await axios.post(`/personality-test/${userId}`, {
+      openness,
+      conscientiousness,
+      extraversion,
+      agreeableness,
+      neuroticism,
+      });
+
+      if (response.status === 200) {
+        console.log('Personality test data submitted successfully!');
+        setTestGiven(true);
+      } else {
+        console.error('Error submitting personality test data:', response.statusText);
+      }
+
+      setTestGiven(true);
+    } catch (error) {
+      console.error('Error submitting personality test data:', error.message);
+    }
+  };
 
   const startTest = () => {
     setTestStarted(true);
@@ -158,7 +215,6 @@ export const Questions = () => {
   };
 
   const handleRestartTest = () => {
-    // Reset the timer and other state variables to restart the test
     setTimer(600);
     setIsTimerRunning(false);
     setTestStarted(false);
@@ -171,12 +227,9 @@ export const Questions = () => {
     <Flex direction={{ base: 'column', md: 'row' }} minH="100vh" bgGradient="linear(to-r, #89f7fe, #66a6ff)" color="white">
       <Sidebar display={{ base: 'none', md: 'solid' }} />
       <Flex flex="1" direction="column" p="8" ml={{ base: '0', md: '260px' }}>
-        {/* Main Content */}
         {testGiven ? (
-          // If the test is already given, display the result component
-          <ResultComponent />
+          <ResultComponent userData={userData} userinfo={userinfo}/>
         ) : (
-          // If the test is not given, display the personality test component
           <Box p="6" bg="white" borderRadius="md" boxShadow="md" mb="4" id="PersonalityTest">
             <Container maxW="xl" centerContent>
               <Box
@@ -225,7 +278,6 @@ export const Questions = () => {
             </VStack>
           </Box>
         )}
-        {/* Footer component */}
         <Box mt="auto" textAlign="center">
           <Text fontSize="sm" color="gray.500">
             &copy; 2024 Eunoia. All rights reserved.

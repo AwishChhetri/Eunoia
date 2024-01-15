@@ -1,10 +1,17 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userId, setUserId] = useState(null);
-  const [token, setToken] = useState(null);
+  // Initialize state with data from localStorage or default to null
+  const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+
+  // Use useEffect to update state when localStorage changes
+  useEffect(() => {
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('token', token);
+  }, [userId, token]);
 
   return (
     <UserContext.Provider value={{ userId, setUserId, token, setToken }}>

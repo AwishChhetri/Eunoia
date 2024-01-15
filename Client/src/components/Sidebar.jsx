@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 import { FaBars, FaTimes, FaFileAlt, FaUser, FaBrain, FaCalendarAlt, FaSignOutAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { useUser } from '../userContext.jsx'; // Adjust the path accordingly
+import { calcLength } from 'framer-motion';
 
 export const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(!useMediaQuery("(max-width: 600px)")[0]);
   const [isMobile] = useMediaQuery("(max-width: 600px)");
   const { userId } = useUser(); // Use the useUser hook to get userId
   const [userData, setUserData] = useState(null); // State to store user data
-
+  console.log(userId)
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -21,6 +22,7 @@ export const Sidebar = () => {
 
   useEffect(() => {
     // Fetch user data from the backend API using the userId
+    
     const getUserData = async () => {
       try {
         const response = await axios.get(`/userdata/${userId}`);
@@ -30,6 +32,7 @@ export const Sidebar = () => {
         console.error('Error fetching user data:', error.message);
       }
     };
+    console.log("Siderbar")
 
     if (userId) {
       getUserData();

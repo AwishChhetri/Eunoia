@@ -8,11 +8,12 @@ import { Appointment } from './pages/Appointment.jsx';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
   return (
     <Route
       {...rest}
       render={(props) =>
-        userId ? <Component {...props} /> : <Redirect to="/" />
+        userId && token? <Component {...props} /> : <Redirect to="/" />
       }
     />
   );

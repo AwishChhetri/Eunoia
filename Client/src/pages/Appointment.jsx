@@ -39,7 +39,7 @@ export const Appointment = () => {
         {/* Footer component */}
         <Box textAlign="center" p="2">
           <Text fontSize="sm" color="gray.500">
-            &copy; 2023 Naruto Dashboard. All rights reserved.
+            &copy;2024 Eunoia. All rights reserved.
           </Text>
         </Box>
       </Flex>

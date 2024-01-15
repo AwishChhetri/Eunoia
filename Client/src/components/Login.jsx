@@ -34,6 +34,9 @@ const Login = () => {
   const setSessionTimeoutCallback = () => {
     const sessionTimeoutId = setTimeout(() => {
       localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      setUserId(null);
+      setToken(null);
       history.push('/');
     },15*60 * 10000); // 1 hour session timeout
 
@@ -87,7 +90,7 @@ const Login = () => {
 
         // Continue with your navigation logic
         setSessionTimeoutCallback();
-        history.push(`/dash`);
+        history.push("/dash");
       } else {
         showAlert('Error', 'Invalid email or password', 'error');
       }
