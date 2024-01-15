@@ -90,46 +90,31 @@ export const Questions = () => {
   const [testStarted, setTestStarted] = useState(false);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [testGiven, setTestGiven] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState();
   const { userId } = useUser();
-  const [userinfo, setUserinfo] = useState(null); 
+  const [userinfo, setUserinfo] = useState(); 
   useEffect(() => {
-    // Fetch user data from the backend API using the userId
-    
-    const getUserInfo = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`/userdata/${userId}`);
-        setUserinfo(response.data);
-        
-        console.log("User Info",response.data)
-      } catch (error) {
-        console.error('Error fetching user data:', error.message);
-      }
-    };
-    console.log("Siderbar")
-
-    if (userId) {
-      getUserInfo();
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    console.log(userId)
-    const getUserData = async () => {
-      try {
-        const response = await axios.get(`/personality-test/data/${userId}`);
-        setUserData(response.data);
+        // Fetch user data from the backend API using the userId
+        const responseUserInfo = await axios.get(`/userdata/${userId}`);
+        setUserinfo(responseUserInfo.data);
+        console.log("User Info", responseUserInfo.data);
+  
+        const responseUserData = await axios.get(`/personality-test/data/${userId}`);
+        setUserData(responseUserData.data);
         setTestGiven(true);
-        console.log("personality-test",response.data);
+        console.log("personality-test", responseUserData.data);
       } catch (error) {
         console.error('Error fetching user data:', error.message);
       }
     };
-
+  
     if (userId) {
-      getUserData();
+      fetchData();
     }
   }, [userId]);
+  
 
   useEffect(() => {
     if (isTimerRunning) {
